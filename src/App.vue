@@ -1,6 +1,5 @@
 <template>
-  <div id="app">
-    <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
+  <div class="container">
     <div>
       <button type="button" class="btn btn-info">필터</button>
 
@@ -14,25 +13,45 @@
       </div>
     </div>
 
-    <List v-for="item in items" :key="item.no" :item="item" :categories="categories"/>
+    <div v-for="(item, index) in allItems" :key="index">
+      <List v-if="index % 4 !== 3" :item="item" :categories="categories"/>
+      <Ads v-if="index % 4 === 3" :item="item"/>
+    </div>
+
+    <button v-on:click="nextPageHandler">다음페이지</button>
   </div>
 </template>
 
 <script>
 import List from "./components/List.vue";
+import Ads from "./components/Ads.vue";
 import listItem from "./datas/listItem.json";
 import categoryItem from "./datas/categoryItem.json";
+import adsItem from "./datas/adsItem.json";
 
 export default {
   name: "app",
   components: {
-    List
+    List,
+    Ads
   },
   data() {
     return {
       items: listItem.list,
-      categories: categoryItem.list
+      categories: categoryItem.list,
+      adsItems: adsItem.list,
+      allItems: [],
+      page: 1
     };
+  },
+  mounted() {
+    for (let i = 0; i < this.items.length; i++) {
+      if (i % 4 === 3) {
+        this.allItems.push(this.adsItems.shift());
+      } else {
+        this.allItems.push(this.items[i]);
+      }
+    }
   },
   methods: {
     sortClickHandler: function(isDesc) {
@@ -46,6 +65,17 @@ export default {
         this.items.sort(function(a, b) {
           return +a.no < +b.no ? -1 : +a.no > +b.no ? 1 : 0;
         });
+      }
+    },
+    nextPageHandler: function() {
+      this.page += 1;
+      this.getAdsSevice();
+    },
+    getAdsSevice: function() {
+      if (this.page % 2 === 0) {
+        // limit 3
+      } else {
+        // limit 2
       }
     }
   }
