@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div>
-      <button type="button" class="btn btn-info">필터</button>
+      <button type="button" class="btn btn-info" v-on:click="showModal=true">필터</button>
 
       <div class="btn-group btn-group-toggle btn-sort" data-toggle="buttons">
         <label class="btn btn-secondary active" v-on:click="sortClickHandler(false)">
@@ -19,12 +19,15 @@
     </div>
 
     <button v-on:click="nextPageHandler">다음페이지</button>
+
+    <filter-modal v-if="showModal" :categories="categories"/>
   </div>
 </template>
 
 <script>
 import List from "./components/List.vue";
 import Ads from "./components/Ads.vue";
+import FilterModal from "./components/FilterModal.vue";
 import listItem from "./datas/listItem.json";
 import categoryItem from "./datas/categoryItem.json";
 import adsItem from "./datas/adsItem.json";
@@ -33,7 +36,8 @@ export default {
   name: "app",
   components: {
     List,
-    Ads
+    Ads,
+    FilterModal
   },
   data() {
     return {
@@ -41,7 +45,8 @@ export default {
       categories: categoryItem.list,
       adsItems: adsItem.list,
       allItems: [],
-      page: 1
+      page: 1,
+      showModal: false
     };
   },
   mounted() {
@@ -77,7 +82,8 @@ export default {
       } else {
         // limit 2
       }
-    }
+    },
+    filterClickHandler: function() {}
   }
 };
 </script>
