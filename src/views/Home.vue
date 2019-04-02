@@ -83,7 +83,7 @@ export default {
   },
   methods: {
     listClickHandler: function(number) {
-      console.log(number);
+      this.$router.push({ path: "detail", query: { num: number } });
     },
     sortChangeHandler: function() {
       this.ord = this.picked;
