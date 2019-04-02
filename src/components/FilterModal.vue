@@ -6,21 +6,21 @@
           <div class="col">필터</div>
 
           <div class="col close-container">
-            <button class="close">
+            <button class="close" v-on:click="closeModal">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
         </div>
 
         <div class="row check-container">
-          <div class="form-check col-4" v-for="(category, index) in categories" :key="index">
-            <input type="checkbox" :value="category.name" v-model="selectedCategories">
+          <div class="form-check col-4" v-for="(category, index) in savedCategories" :key="index">
+            <input type="checkbox" :value="category.name" v-model="category.checked">
             <label>{{category.name}}</label>
           </div>
         </div>
-
+        {{savedCategories}}
         <div class="modal-footer">
-          <button>저장</button>
+          <button v-on:click="categorySave">저장</button>
         </div>
       </div>
     </div>
@@ -31,12 +31,20 @@
 export default {
   name: "FilterModal",
   props: {
-    categories: Array
+    savedCategories: Array
   },
   data() {
-    return {
-      selectedCategories: []
-    };
+    return {};
+  },
+  mounted() {},
+  methods: {
+    categorySave: function() {
+      this.$emit("categorySave", this.savedCategories);
+    },
+    closeModal: function() {
+      console.log("closeModal");
+      // this.$emit("beforeSave");
+    }
   }
 };
 </script>
