@@ -3,15 +3,11 @@
     <div class="row" style="padding-left: 20px;">Sponsored</div>
     <div class="row">
       <div class="col-md-3">
-        <img
-          src="http://comento.cafe24.com/public/images/test3.jpg"
-          alt="bootsnipp"
-          style="max-width: 100%; height:auto;"
-        >
+        <img :src="getImgUrl()" :alt="item.img" style="max-width: 100%; height:auto;">
       </div>
       <div class="col-md-9">
-        <span>ADS_3KprF</span>
-        <p>Mauris nunc elit, pulvinar sit amet metus ut, efficitur tincidunt nisi. Sed scelerisque eget nisl at scelerisque. Nulla ac tincidunt enim. Nullam elementum molestie rhoncus. Morbi accumsan ligula id condimentum sagittis. Curabitur ligula sem, bibendum non consectetur sed, euismod nec est. Aenean faucibus non lorem id ullamcorper. Phasellus vitae risus quis metus sodales fermentum ultrices sed lorem. Aenean nec imperdiet odio, sed ullamcorper quam. Pellentesque a gravida ex. Maecenas semper torto</p>
+        <span>{{item.title}}</span>
+        <p>{{item.contents}}</p>
       </div>
     </div>
   </div>
@@ -22,6 +18,11 @@ export default {
   name: "Ads",
   props: {
     item: Object
+  },
+  methods: {
+    getImgUrl: function() {
+      return `http://comento.cafe24.com/public/images/${this.item.img}`;
+    }
   }
 };
 </script>

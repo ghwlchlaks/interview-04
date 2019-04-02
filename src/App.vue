@@ -33,9 +33,6 @@
 import List from "./components/List.vue";
 import Ads from "./components/Ads.vue";
 import FilterModal from "./components/FilterModal.vue";
-// import listItem from "./datas/listItem.json";
-// import categoryItem from "./datas/categoryItem.json";
-// import adsItem from "./datas/adsItem.json";
 
 export default {
   name: "app",
@@ -53,7 +50,8 @@ export default {
       page: 1,
       showModal: false,
       selectedCategories: [],
-      ord: "asc"
+      ord: "asc",
+      adsPage: 1
     };
   },
   created() {
@@ -94,14 +92,15 @@ export default {
         );
 
         const getAds = this.$http.get(
-          `http://comento.cafe24.com/ads.php?page=${this.page}&limit=5`
+          `http://comento.cafe24.com/ads.php?page=${this.adsPage}&limit=5`
         );
 
         Promise.all([getItems, getAds]).then(values => {
+          this.adsItems = [].concat(values[1].data.list);
           for (let i = 0; i < values[0].data.list.length; i++) {
-            if (i % 4 === 3) {
-              this.allItems.push(values[1].data.list.shift());
-              // console.log(values[1].data.list);
+            if (this.allItems.length % 4 === 3 && this.allItems.length > 0) {
+              this.allItems.push(this.adsItems.shift());
+              i -= 1;
             } else {
               this.allItems.push(values[0].data.list[i]);
             }
@@ -111,10 +110,49 @@ export default {
     });
   },
   methods: {
-    nextPageHandler: function() {
+    nextPageHandler: async function() {
       console.log("test");
-      // this.page += 1;
-      // this.getAdsSevice();
+      this.page += 1;
+
+      let category = "";
+      this.selectedCategories.map((value, index) => {
+        if (index !== this.selectedCategories.length - 1) {
+          category += value.no + ",";
+        } else {
+          category += value.no;
+        }
+      });
+
+      const itemList = await this.$http
+        .get(
+          `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
+            this.ord
+          }&category=${category}`
+        )
+        .then(result => {
+          if (result.data.code === 200 && result.status === 200) {
+            return result.data.list;
+          }
+        });
+
+      for (let i = 0; i < itemList.length; i++) {
+        if (this.allItems.length % 4 === 3 && this.allItems.length > 0) {
+          this.allItems.push(this.adsItems.shift());
+          if (!this.adsItems.length) {
+            this.adsPage += 1;
+            await this.$http
+              .get(
+                `http://comento.cafe24.com/ads.php?page=${this.adsPage}&limit=5`
+              )
+              .then(adsResult => {
+                this.adsItems = [].concat(adsResult.data.list);
+              });
+          }
+          i -= 1;
+        } else {
+          this.allItems.push(itemList[i]);
+        }
+      }
     },
     getAdsSevice: function() {
       if (this.page % 2 === 0) {
