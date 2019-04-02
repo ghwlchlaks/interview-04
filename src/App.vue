@@ -3,13 +3,25 @@
     <div>
       <button type="button" class="btn btn-info" v-on:click="showModal=true">필터</button>
 
-      <div class="btn-group btn-group-toggle btn-sort" data-toggle="buttons">
-        <label class="btn btn-secondary active">
-          <input type="radio" id="option1" autocomplete="off" checked> 오름차순
-        </label>
-        <label class="btn btn-secondary">
-          <input type="radio" id="option2" autocomplete="off"> 내림차순
-        </label>
+      <div class="brn-sort">
+        <input
+          type="radio"
+          value="asc"
+          v-on:change="changeHandler"
+          v-model="picked"
+          :checked="picked === ord"
+        >
+        <label for="one">오름차순</label>
+        <br>
+        <input
+          type="radio"
+          value="desc"
+          v-on:change="changeHandler"
+          v-model="picked"
+          :checked="picked === ord"
+        >
+        <label for="two">내림차순</label>
+        <br>
       </div>
     </div>
 
@@ -51,7 +63,8 @@ export default {
       showModal: false,
       selectedCategories: [],
       ord: "asc",
-      adsPage: 1
+      adsPage: 1,
+      picked: "asc"
     };
   },
   created() {
@@ -62,56 +75,68 @@ export default {
     });
   },
   mounted() {
-    this.$http.get("http://comento.cafe24.com/category.php").then(result => {
-      if (result.data.code === 200 && result.status === 200) {
-        this.categories = [].concat(result.data.list);
-        for (let i = 0; i < this.categories.length; i++) {
-          this.selectedCategories = [
-            ...this.selectedCategories,
-            {
-              name: this.categories[i].name,
-              no: this.categories[i].no,
-              checked: true
-            }
-          ];
-        }
-
-        let category = "";
-        this.selectedCategories.map((value, index) => {
-          if (index !== this.selectedCategories.length - 1) {
-            category += value.no + ",";
-          } else {
-            category += value.no;
-          }
-        });
-
-        const getItems = this.$http.get(
-          `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
-            this.ord
-          }&category=${category}`
-        );
-
-        const getAds = this.$http.get(
-          `http://comento.cafe24.com/ads.php?page=${this.adsPage}&limit=5`
-        );
-
-        Promise.all([getItems, getAds]).then(values => {
-          this.adsItems = [].concat(values[1].data.list);
-          for (let i = 0; i < values[0].data.list.length; i++) {
-            if (this.allItems.length % 4 === 3 && this.allItems.length > 0) {
-              this.allItems.push(this.adsItems.shift());
-              i -= 1;
-            } else {
-              this.allItems.push(values[0].data.list[i]);
-            }
-          }
-        });
-      }
-    });
+    this.initialList();
   },
   methods: {
+    changeHandler: function() {
+      this.ord = this.picked;
+      this.initialList();
+    },
+
+    initialList: function() {
+      this.allItems = [];
+      this.adsPage = 1;
+      this.page = 1;
+
+      this.$http.get("http://comento.cafe24.com/category.php").then(result => {
+        if (result.data.code === 200 && result.status === 200) {
+          this.categories = [].concat(result.data.list);
+          for (let i = 0; i < this.categories.length; i++) {
+            this.selectedCategories = [
+              ...this.selectedCategories,
+              {
+                name: this.categories[i].name,
+                no: this.categories[i].no,
+                checked: true
+              }
+            ];
+          }
+
+          let category = "";
+          this.selectedCategories.map((value, index) => {
+            if (index !== this.selectedCategories.length - 1) {
+              category += value.no + ",";
+            } else {
+              category += value.no;
+            }
+          });
+
+          const getItems = this.$http.get(
+            `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
+              this.ord
+            }&category=${category}`
+          );
+
+          const getAds = this.$http.get(
+            `http://comento.cafe24.com/ads.php?page=${this.adsPage}&limit=5`
+          );
+
+          Promise.all([getItems, getAds]).then(values => {
+            this.adsItems = [].concat(values[1].data.list);
+            for (let i = 0; i < values[0].data.list.length; i++) {
+              if (this.allItems.length % 4 === 3 && this.allItems.length > 0) {
+                this.allItems.push(this.adsItems.shift());
+                i -= 1;
+              } else {
+                this.allItems.push(values[0].data.list[i]);
+              }
+            }
+          });
+        }
+      });
+    },
+
     nextPageHandler: async function() {
-      console.log("test");
       this.page += 1;
 
       let category = "";
