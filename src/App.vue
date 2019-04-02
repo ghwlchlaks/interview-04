@@ -3,25 +3,23 @@
     <div>
       <button type="button" class="btn btn-info" v-on:click="showModal=true">필터</button>
 
-      <div class="brn-sort">
+      <div class="btn-sort">
         <input
           type="radio"
           value="asc"
-          v-on:change="changeHandler"
+          v-on:change="sortChangeHandler"
           v-model="picked"
           :checked="picked === ord"
         >
         <label for="one">오름차순</label>
-        <br>
         <input
           type="radio"
           value="desc"
-          v-on:change="changeHandler"
+          v-on:change="sortChangeHandler"
           v-model="picked"
           :checked="picked === ord"
         >
         <label for="two">내림차순</label>
-        <br>
       </div>
     </div>
 
@@ -29,8 +27,6 @@
       <List v-if="index % 4 !== 3" :item="item" :categories="categories"/>
       <Ads v-if="index % 4 === 3" :item="item"/>
     </div>
-
-    <button v-on:click="nextPageHandler">다음페이지</button>
 
     <filter-modal
       v-if="showModal"
@@ -64,7 +60,8 @@ export default {
       selectedCategories: [],
       ord: "asc",
       adsPage: 1,
-      picked: "asc"
+      picked: "asc",
+      category: ""
     };
   },
   created() {
@@ -78,9 +75,9 @@ export default {
     this.initialList();
   },
   methods: {
-    changeHandler: function() {
+    sortChangeHandler: function() {
       this.ord = this.picked;
-      this.initialList();
+      this.initialChangeList();
     },
 
     initialList: function() {
@@ -102,19 +99,17 @@ export default {
             ];
           }
 
-          let category = "";
-          this.selectedCategories.map((value, index) => {
-            if (index !== this.selectedCategories.length - 1) {
-              category += value.no + ",";
-            } else {
-              category += value.no;
+          this.selectedCategories.map(value => {
+            if (value.checked) {
+              this.category += value.no + ",";
             }
           });
+          this.category = this.category.substring(0, this.category.length - 1);
 
           const getItems = this.$http.get(
             `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
               this.ord
-            }&category=${category}`
+            }&category=${this.category}`
           );
 
           const getAds = this.$http.get(
@@ -139,20 +134,19 @@ export default {
     nextPageHandler: async function() {
       this.page += 1;
 
-      let category = "";
-      this.selectedCategories.map((value, index) => {
-        if (index !== this.selectedCategories.length - 1) {
-          category += value.no + ",";
-        } else {
-          category += value.no;
+      this.category = "";
+      this.selectedCategories.map(value => {
+        if (value.checked) {
+          this.category += value.no + ",";
         }
       });
+      this.category = this.category.substring(0, this.category.length - 1);
 
       const itemList = await this.$http
         .get(
           `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
             this.ord
-          }&category=${category}`
+          }&category=${this.category}`
         )
         .then(result => {
           if (result.data.code === 200 && result.status === 200) {
@@ -179,18 +173,45 @@ export default {
         }
       }
     },
-    getAdsSevice: function() {
-      if (this.page % 2 === 0) {
-        // limit 3
-      } else {
-        // limit 2
-      }
+    initialChangeList: function() {
+      this.allItems = [];
+      this.adsPage = 1;
+      this.page = 1;
+
+      this.category = "";
+      this.selectedCategories.map(value => {
+        if (value.checked) {
+          this.category += value.no + ",";
+        }
+      });
+      this.category = this.category.substring(0, this.category.length - 1);
+
+      const getItems = this.$http.get(
+        `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
+          this.ord
+        }&category=${this.category}`
+      );
+
+      const getAds = this.$http.get(
+        `http://comento.cafe24.com/ads.php?page=${this.adsPage}&limit=5`
+      );
+
+      Promise.all([getItems, getAds]).then(values => {
+        this.adsItems = [].concat(values[1].data.list);
+        for (let i = 0; i < values[0].data.list.length; i++) {
+          if (this.allItems.length % 4 === 3 && this.allItems.length > 0) {
+            this.allItems.push(this.adsItems.shift());
+            i -= 1;
+          } else {
+            this.allItems.push(values[0].data.list[i]);
+          }
+        }
+      });
     },
-    filterClickHandler: function() {},
     categorySave: function(categories) {
       // categories 배열로 전달 받음
       this.selectedCategories = [].concat(categories);
-      console.log(this.selectedCategories);
+      this.initialChangeList();
       this.closeModal();
     },
     closeModal: function() {
