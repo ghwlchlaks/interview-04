@@ -15,10 +15,10 @@
         <span>{{item.updated_at}}</span>
       </div>
 
-      <p class="mb-1">{{item.title}}</p>
+      <p class="mb-1 title">{{item.title}}</p>
 
       <div>
-        <small>{{item.contents}}</small>
+        <small class="contents">{{item.contents}}</small>
       </div>
     </a>
   </div>

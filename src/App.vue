@@ -7,19 +7,21 @@
         <input
           type="radio"
           value="asc"
+          id="asc"
           v-on:change="sortChangeHandler"
           v-model="picked"
           :checked="picked === ord"
         >
-        <label for="one">오름차순</label>
+        <label for="asc">오름차순</label>
         <input
           type="radio"
           value="desc"
+          id="desc"
           v-on:change="sortChangeHandler"
           v-model="picked"
           :checked="picked === ord"
         >
-        <label for="two">내림차순</label>
+        <label for="desc">내림차순</label>
       </div>
     </div>
 
@@ -224,5 +226,48 @@ export default {
 <style lang='less'>
 .btn-sort {
   float: right;
+}
+
+div .contents {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  line-height: 1.2em;
+  height: 3.6em;
+}
+
+div .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  line-height: 1.2em;
+  height: 1.2em;
+}
+
+input[type="radio"] {
+  display: none;
+  margin: 10px;
+}
+
+input[type="radio"] + label {
+  display: inline-block;
+  margin: -2px;
+  padding: 8px 19px;
+  background-color: #f5f5f5;
+  border: 1px;
+  width: 110px;
+  text-align: center;
+}
+
+input[type="radio"]:checked + label {
+  background-image: none;
+  background-color: #3598dc;
+  color: #fff;
 }
 </style>

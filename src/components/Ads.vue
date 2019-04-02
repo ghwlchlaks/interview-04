@@ -6,8 +6,8 @@
         <img :src="getImgUrl()" :alt="item.img" style="max-width: 100%; height:auto;">
       </div>
       <div class="col-md-9">
-        <span>{{item.title}}</span>
-        <p>{{item.contents}}</p>
+        <span class="title">{{item.title}}</span>
+        <p class="contents">{{item.contents}}</p>
       </div>
     </div>
   </div>
