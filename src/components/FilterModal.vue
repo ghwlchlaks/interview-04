@@ -14,7 +14,13 @@
 
         <div class="row check-container">
           <div class="form-check col-4" v-for="(category, index) in savedCategories" :key="index">
-            <input type="checkbox" :value="category.name" v-model="category.checked">
+            <input
+              type="checkbox"
+              :value="category.name"
+              v-model="category.checked"
+              :disabled="category.disabled"
+              @change="updateCategory"
+            >
             <label>{{category.name}}</label>
           </div>
         </div>
@@ -33,7 +39,9 @@ export default {
     savedCategories: Array
   },
   data() {
-    return {};
+    return {
+      ticks: []
+    };
   },
   mounted() {},
   methods: {
@@ -42,6 +50,25 @@ export default {
     },
     closeModal: function() {
       this.$emit("closeModal");
+    },
+    updateCategory: function() {
+      this.ticks = this.savedCategories.filter(category => category.checked);
+
+      if (this.ticks.length <= 1) {
+        this.savedCategories.forEach(category => {
+          if (category.checked) {
+            category.disabled = true;
+          }
+        });
+      }
+
+      if (this.ticks.length > 1) {
+        this.savedCategories.forEach(category => {
+          if (category.checked) {
+            category.disabled = false;
+          }
+        });
+      }
     }
   }
 };

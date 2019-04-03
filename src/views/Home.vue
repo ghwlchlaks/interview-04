@@ -99,7 +99,8 @@ export default {
               {
                 name: this.categories[i].name,
                 no: this.categories[i].no,
-                checked: true
+                checked: true,
+                disabled: false
               }
             ];
           }
@@ -187,7 +188,6 @@ export default {
 .btn-sort {
   float: right;
 }
-
 .btn-filter {
   display: inline-block;
   margin: -2px;
@@ -196,45 +196,45 @@ export default {
   border: 1px;
   text-align: center;
 }
-div .contents {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  word-wrap: break-word;
-  line-height: 1.2em;
-  height: 3.6em;
+div {
+  .contents {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+    line-height: 1.2em;
+    height: 3.6em;
+  }
+  .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+    line-height: 1.2em;
+    height: 1.2em;
+  }
 }
-
-div .title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  word-wrap: break-word;
-  line-height: 1.2em;
-  height: 1.2em;
-}
-
 input[type="radio"] {
   display: none;
   margin: 10px;
+  & + label {
+    display: inline-block;
+    margin: -2px;
+    padding: 8px 19px;
+    background-color: #f5f5f5;
+    border: 1px;
+    text-align: center;
+  }
 }
-
-input[type="radio"] + label {
-  display: inline-block;
-  margin: -2px;
-  padding: 8px 19px;
-  background-color: #f5f5f5;
-  border: 1px;
-  text-align: center;
-}
-
-input[type="radio"]:checked + label {
-  background-image: none;
-  background-color: #3598dc;
-  color: #fff;
+input[type="radio"]:checked {
+  & + label {
+    background-image: none;
+    background-color: #3598dc;
+    color: #fff;
+  }
 }
 </style>
