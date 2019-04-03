@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div>
-      <button type="button" class="btn btn-info" v-on:click="showModal=true">필터</button>
+      <button type="button" class="btn btn-info btn-filter" v-on:click="showModal=true">필터</button>
 
       <div class="btn-sort">
         <input
@@ -236,6 +236,14 @@ export default {
   float: right;
 }
 
+.btn-filter {
+  display: inline-block;
+  margin: -2px;
+  padding: 8px 19px;
+  background-color: gray;
+  border: 1px;
+  text-align: center;
+}
 div .contents {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -269,7 +277,6 @@ input[type="radio"] + label {
   padding: 8px 19px;
   background-color: #f5f5f5;
   border: 1px;
-  width: 110px;
   text-align: center;
 }
 

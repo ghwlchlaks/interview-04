@@ -6,7 +6,7 @@
         v-for="category in categories"
         :key="category.no"
       >
-        <span class="mb-1" v-if="category.no === item.category_no">{{category.name}}</span>
+        <span v-if="category.no === item.category_no">{{category.name}}</span>
         <small v-if="category.no === item.category_no">{{item.no}}</small>
       </div>
 
@@ -15,7 +15,7 @@
         <span>{{item.updated_at}}</span>
       </div>
 
-      <p class="mb-1 title">{{item.title}}</p>
+      <p class="title">{{item.title}}</p>
 
       <div>
         <small class="contents">{{item.contents}}</small>

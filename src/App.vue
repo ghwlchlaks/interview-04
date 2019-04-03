@@ -10,4 +10,7 @@ export default {
 </script>
 
 <style lang='less'>
+#app {
+  margin: 20px;
+}
 </style>
