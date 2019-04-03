@@ -1,29 +1,12 @@
-# interview05-comento
+## 실행 방법
 
-## Project setup
 ```
+cd interview-comento
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## 지원 브라우저
 
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+> ie > 10  
+> last 2 versions
