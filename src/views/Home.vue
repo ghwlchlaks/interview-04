@@ -10,7 +10,7 @@
           id="asc"
           v-on:change="sortChangeHandler"
           v-model="picked"
-          :checked="picked === ord"
+          v-on:checked="picked === ord"
         >
         <label for="asc">오름차순</label>
         <input
@@ -19,7 +19,7 @@
           id="desc"
           v-on:change="sortChangeHandler"
           v-model="picked"
-          :checked="picked === ord"
+          v-on:checked="picked === ord"
         >
         <label for="desc">내림차순</label>
       </div>
@@ -72,7 +72,10 @@ export default {
   },
   created() {
     window.addEventListener("scroll", () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.body.offsetHeight
+      ) {
         this.nextPageHandler();
       }
     });
