@@ -18,7 +18,6 @@
             <label>{{category.name}}</label>
           </div>
         </div>
-        {{savedCategories}}
         <div class="modal-footer">
           <button v-on:click="categorySave">저장</button>
         </div>
@@ -42,8 +41,7 @@ export default {
       this.$emit("categorySave", this.savedCategories);
     },
     closeModal: function() {
-      console.log("closeModal");
-      // this.$emit("beforeSave");
+      this.$emit("closeModal");
     }
   }
 };

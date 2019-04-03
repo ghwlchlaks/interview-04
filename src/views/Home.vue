@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div>
-      <button type="button" class="btn btn-info btn-filter" v-on:click="showModal=true">필터</button>
+      <button type="button" class="btn btn-info btn-filter" v-on:click="showModal = true">필터</button>
 
       <div class="btn-sort">
         <input
@@ -40,6 +40,7 @@
       :categories="categories"
       :savedCategories="selectedCategories"
       v-on:categorySave="categorySave"
+      v-on:closeModal="closeModal"
     />
   </div>
 </template>
@@ -48,6 +49,7 @@
 import List from "../components/List.vue";
 import Ads from "../components/Ads.vue";
 import FilterModal from "../components/FilterModal.vue";
+import { getList, getCategories, getAdsList } from "../services";
 
 export default {
   name: "home",
@@ -58,9 +60,6 @@ export default {
   },
   data() {
     return {
-      items: [],
-      categories: [],
-      adsItems: [],
       allItems: [],
       page: 1,
       showModal: false,
@@ -91,11 +90,7 @@ export default {
     },
 
     initialList: function() {
-      this.allItems = [];
-      this.adsPage = 1;
-      this.page = 1;
-
-      this.$http.get("http://comento.cafe24.com/category.php").then(result => {
+      getCategories().then(result => {
         if (result.data.code === 200 && result.status === 200) {
           this.categories = [].concat(result.data.list);
           for (let i = 0; i < this.categories.length; i++) {
@@ -108,35 +103,7 @@ export default {
               }
             ];
           }
-
-          this.selectedCategories.map(value => {
-            if (value.checked) {
-              this.category += value.no + ",";
-            }
-          });
-          this.category = this.category.substring(0, this.category.length - 1);
-
-          const getItems = this.$http.get(
-            `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
-              this.ord
-            }&category=${this.category}`
-          );
-
-          const getAds = this.$http.get(
-            `http://comento.cafe24.com/ads.php?page=${this.adsPage}&limit=5`
-          );
-
-          Promise.all([getItems, getAds]).then(values => {
-            this.adsItems = [].concat(values[1].data.list);
-            for (let i = 0; i < values[0].data.list.length; i++) {
-              if (this.allItems.length % 4 === 3 && this.allItems.length > 0) {
-                this.allItems.push(this.adsItems.shift());
-                i -= 1;
-              } else {
-                this.allItems.push(values[0].data.list[i]);
-              }
-            }
-          });
+          this.initialChangeList();
         }
       });
     },
@@ -152,30 +119,22 @@ export default {
       });
       this.category = this.category.substring(0, this.category.length - 1);
 
-      const itemList = await this.$http
-        .get(
-          `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
-            this.ord
-          }&category=${this.category}`
-        )
-        .then(result => {
+      const itemList = await getList(this.page, this.ord, this.category).then(
+        result => {
           if (result.data.code === 200 && result.status === 200) {
             return result.data.list;
           }
-        });
+        }
+      );
 
       for (let i = 0; i < itemList.length; i++) {
         if (this.allItems.length % 4 === 3 && this.allItems.length > 0) {
           this.allItems.push(this.adsItems.shift());
           if (!this.adsItems.length) {
             this.adsPage += 1;
-            await this.$http
-              .get(
-                `http://comento.cafe24.com/ads.php?page=${this.adsPage}&limit=5`
-              )
-              .then(adsResult => {
-                this.adsItems = [].concat(adsResult.data.list);
-              });
+            await getAdsList(this.adsPage, 5).then(adsResult => {
+              this.adsItems = [].concat(adsResult.data.list);
+            });
           }
           i -= 1;
         } else {
@@ -187,7 +146,6 @@ export default {
       this.allItems = [];
       this.adsPage = 1;
       this.page = 1;
-
       this.category = "";
       this.selectedCategories.map(value => {
         if (value.checked) {
@@ -196,15 +154,8 @@ export default {
       });
       this.category = this.category.substring(0, this.category.length - 1);
 
-      const getItems = this.$http.get(
-        `http://comento.cafe24.com/request.php?page=${this.page}&ord=${
-          this.ord
-        }&category=${this.category}`
-      );
-
-      const getAds = this.$http.get(
-        `http://comento.cafe24.com/ads.php?page=${this.adsPage}&limit=5`
-      );
+      const getItems = getList(this.page, this.ord, this.category);
+      const getAds = getAdsList(this.adsPage, 5);
 
       Promise.all([getItems, getAds]).then(values => {
         this.adsItems = [].concat(values[1].data.list);
@@ -218,6 +169,7 @@ export default {
         }
       });
     },
+
     categorySave: function(categories) {
       // categories 배열로 전달 받음
       this.selectedCategories = [].concat(categories);

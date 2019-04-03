@@ -5,9 +5,7 @@
         <div>{{article.title}}</div>
         <div class="text-right">{{article.email}}</div>
       </div>
-      <div
-        class="panel-body"
-      >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quis orci massa. Donec ultricies vulputate eros elementum euismod. Donec in ligula nunc. Quisque vehicula urna ut nulla imperdiet porttitor. Vestibulum turpis tellus, interdum sit amet magna vitae, tincidunt auctor nulla. Fusce rutrum interdum sapien id consequat. Donec luctus arcu et.</div>
+      <div class="panel-body">{{article.contents}}</div>
       <div class="text-right">{{article.updated_at}}</div>
     </div>
 
@@ -28,23 +26,21 @@
 </template>
 
 <script>
+import { getDetailContents } from "../services";
+
 export default {
   name: "detail",
   methods: {
     getDetailData: function() {
-      this.$http
-        .get(
-          `http://comento.cafe24.com/detail.php?req_no=${this.$route.query.num}`
-        )
-        .then(result => {
-          if (result.data.code === 200 && result.status === 200) {
-            this.article = Object.assign(
-              this.article,
-              result.data.detail.article
-            );
-            this.replies = this.replies.concat(result.data.detail.replies);
-          }
-        });
+      getDetailContents(this.$route.query.num).then(result => {
+        if (result.data.code === 200 && result.status === 200) {
+          this.article = Object.assign(
+            this.article,
+            result.data.detail.article
+          );
+          this.replies = this.replies.concat(result.data.detail.replies);
+        }
+      });
     }
   },
   data() {
