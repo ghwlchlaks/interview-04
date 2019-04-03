@@ -11,6 +11,6 @@ export default {
 
 <style lang='less'>
 #app {
-  margin: 20px;
+  padding-top: 40px;
 }
 </style>
